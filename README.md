@@ -5,7 +5,8 @@
 <video src="./assests/reverse-pySHELL.mp4" width="720" height="500" controls></video>
 
 
-## This reverse-PYSHELL is a Python shell. I produced two files. 1.) File of the attacker 2.) Victim file: The target machine uses the victim file, while the Kali machine uses the attacker file. Configure your IP address, open both file sets containing the attackers' IP addresses, and change the default port (8080) before proceeding with this method. Once the victim file is shared with the target computer, you can begin working.
+<p> This reverse-PYSHELL is a Python shell. I produced two files. 1.) File of the attacker 2.) Victim file: The target machine uses the victim file, while the Kali machine uses the attacker file. Configure your IP address, open both file sets containing the attackers' IP addresses, and change the default port (8080) before proceeding with this method. Once the victim file is shared with the target computer, you can begin working.
+</p>
 
 # Folder Tree
 
