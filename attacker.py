@@ -28,7 +28,7 @@ banner = f"""{RED}{BOLD}
 print(f"{banner}")
 
 
-ip_addr = "Your Kali IP"         # use your kali IP address
+ip_addr = "192.168.74.132"         # use your kali IP address
 port = 8080                      # use any port
 
 
