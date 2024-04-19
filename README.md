@@ -43,4 +43,7 @@ SHELL> ls
 
 #if you want to Exit
 SHELL> terminate
+
+# Help command in SHELL is INFO
+>INFO
 ```
