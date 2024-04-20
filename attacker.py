@@ -4,7 +4,7 @@ import socket
 import os
 
 
-def clear():
+def clear():	# Screen clear functio
      
      os_name = os.name
 
@@ -21,7 +21,7 @@ BOLD = '\033[1m'        # Bold font
 RESET = '\033[0m'       # Reset all
 
 
-banner = f"""{RED}{BOLD}
+banner = f"""{GREEN}{BOLD}
 
                                               (       )     (    (     
                                               )\ ) ( /(     )\ ) )\ )  
