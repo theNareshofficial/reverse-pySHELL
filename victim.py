@@ -15,6 +15,7 @@ def clear():
         os.system("cls")
     else:
         os.system("clear")
+clear()
 
 def connect():
 
